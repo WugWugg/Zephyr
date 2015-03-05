@@ -3,21 +3,16 @@ package com.bixfordstudios.input;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Quaternion;
-import org.lwjgl.util.vector.Vector3f;
 
+import com.bixfordstudios.camera.Camera;
 import com.bixfordstudios.gamestate.State;
 import com.bixfordstudios.gamestate.StateManager;
 import com.bixfordstudios.main.Main;
-import com.bixfordstudios.player.Player;
-import com.bixfordstudios.transformation.Rotation;
-import com.bixfordstudios.transformation.Translation;
 
 public class InputManager {
 
 	private static final float TRANSLATION_SPEED = 0.1f;
-	private static final float MOVEMENT_MODIFIER = 0.01f;
+	private static final float MOVEMENT_MODIFIER = 0.001f;
 	
 	private static float speedX = 0;
 	private static float speedY = 0;
@@ -41,7 +36,11 @@ public class InputManager {
 		} catch (LWJGLException e) { e.printStackTrace(); }
 	}
 	
-	public static void interpretInput(Player player)
+	/**
+	 * This method interprets the keystrokes to their raw action. In Example, the "W" key will add to the speedY in order to keep a sense of a traditional axis-system.
+	 * @param camera
+	 */
+	public static void interpretInput(Camera camera)
 	{
 		switch(StateManager.getCurrent())
 		{
@@ -53,15 +52,12 @@ public class InputManager {
 				updateKeyboard();
 				
 				//Rotate and translate the player's viewingMatrix
-				Matrix4f matrix = player.viewingMatrix;
-				matrix = Translation.translate(new Vector3f(speedX, speedY, speedZ), matrix);
-				matrix = Rotation.rotate(new Quaternion(getDY() * MOVEMENT_MODIFIER, getDX() * MOVEMENT_MODIFIER, roll * TRANSLATION_SPEED, 1), matrix);
-				player.setViewingMatrix(matrix);
+				camera.rotate(getDY() * MOVEMENT_MODIFIER, getDX() * MOVEMENT_MODIFIER, roll * TRANSLATION_SPEED);
+				camera.translate(speedX, speedY, speedZ);
 				
 				Mouse.setCursorPosition(Main.DISPLAY_WIDTH / 2, Main.DISPLAY_HEIGHT / 2);
 				updateMouse();
 				break;
-				
 			case CONFIGURING: break;
 			case ENDED: break;
 			case RESET: break;
@@ -124,11 +120,11 @@ public class InputManager {
 				{	
 					case (Keyboard.KEY_A):
 					case (Keyboard.KEY_LEFT):
-						speedX += TRANSLATION_SPEED;
+						speedX -= TRANSLATION_SPEED;
 						break;
 					case (Keyboard.KEY_D):
 					case (Keyboard.KEY_RIGHT):
-						speedX -= TRANSLATION_SPEED;
+						speedX += TRANSLATION_SPEED;
 						break;
 						
 					case (Keyboard.KEY_W):
@@ -141,17 +137,17 @@ public class InputManager {
 						break; 
 					
 					case (Keyboard.KEY_SPACE):
-						speedY -= TRANSLATION_SPEED;
+						speedY += TRANSLATION_SPEED;
 						break;
 					case (Keyboard.KEY_C):
-						speedY += TRANSLATION_SPEED;
+						speedY -= TRANSLATION_SPEED;
 						break;
 						
 					case (Keyboard.KEY_E):
-						roll -= TRANSLATION_SPEED;
+						roll += TRANSLATION_SPEED;
 						break;
 					case (Keyboard.KEY_Q):
-						roll += TRANSLATION_SPEED;
+						roll -= TRANSLATION_SPEED;
 						break;
 				}
 			}
