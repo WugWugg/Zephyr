@@ -25,34 +25,36 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
+import com.bixfordstudios.camera.Camera;
 import com.bixfordstudios.chunk.Chunk;
+import com.bixfordstudios.chunk.ChunkManager;
 import com.bixfordstudios.input.InputManager;
-import com.bixfordstudios.player.Player;
+import com.bixfordstudios.utility.CoordinateFloat;
 
 public class Main {
 
 	public static final String VERSION_NUMBER = "0.2.1";
 	public static final int DISPLAY_WIDTH = 1024;
 	public static final int DISPLAY_HEIGHT = 768;
+	public static final float DISPLAY_NEAR = .001f;
+	public static final float DISPLAY_FAR = 50f;
 	public static final int DISPLAY_FPS = 60;
-	public static Player firstPlayer;
+	public static final float DISPLAY_FEILD_OF_VIEW = 90f;
 	
 	
 	public static void main(String[] args) {
 		
-		//Testing
-		Chunk chunk1 = new Chunk();
-		chunk1.setupData();
-		//
-			
 		while (!Display.isCloseRequested())
 		{
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-			chunk1.render(0, -17, 0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+			print("Number of Chunks: " + ChunkManager.loadedChunks.values().toArray().length);
+			
+			//Chunk Update
+			ChunkManager.update(Camera.position);
 			
 			//Input Check
-			InputManager.interpretInput(firstPlayer);
+			InputManager.interpretInput();
 			
 			Display.sync(DISPLAY_FPS); 
 			Display.update();
@@ -75,7 +77,7 @@ public class Main {
 		glLoadIdentity();
 		
 		//Create a new perspective with x degrees for field of view, Width / Height aspect ratio, .001f zNear, 100 zFar
-		gluPerspective(90f, DISPLAY_WIDTH / DISPLAY_HEIGHT, 0.001f, 1000f);
+		gluPerspective(DISPLAY_FEILD_OF_VIEW, DISPLAY_WIDTH / DISPLAY_HEIGHT, DISPLAY_NEAR, DISPLAY_FAR);
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -87,8 +89,11 @@ public class Main {
 			
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		
-		//Player Initialization Code
-		firstPlayer = new Player();
+	}
+	
+	//DEBUG && TESTING
+	public static void print(Object str)
+	{
+		System.out.println(str.toString());
 	}
 }

@@ -2,6 +2,7 @@ package com.bixfordstudios.transformation;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Quaternion;
+import org.lwjgl.util.vector.Vector3f;
 
 public class Rotation {
 
@@ -56,7 +57,8 @@ public class Rotation {
 		yAxis = Quaternion.mul(appliedRotation, Quaternion.mul(yAxis, appliedRotation.negate(temp), temp), yAxis);
 		zAxis = Quaternion.mul(appliedRotation, Quaternion.mul(zAxis, appliedRotation.negate(temp), temp), zAxis);
 		position = Quaternion.mul(appliedRotation, Quaternion.mul(position, appliedRotation.negate(temp), temp), position);
-				
+
+		
 		matrix.m00 = xAxis.x;
 		matrix.m01 = xAxis.y;
 		matrix.m02 = xAxis.z;
@@ -74,5 +76,27 @@ public class Rotation {
 		matrix.m32 = position.z;
 		
 		return matrix;
+	}
+	
+	public static Vector3f rotateToIdentity(Matrix4f originalMatrix)
+	{
+		Matrix4f matrix = new Matrix4f(originalMatrix);		
+		matrix.invert();		
+		return new Vector3f(matrix.m30, matrix.m31, matrix.m32);
+	}
+	
+	public static Quaternion rotateTo(Vector3f initial, Vector3f end)
+	{
+		Quaternion ret = new Quaternion();
+		
+		Vector3f quaternionXYZ = new Vector3f();
+		Vector3f.cross(initial, end, quaternionXYZ);
+		ret.x = quaternionXYZ.x;
+		ret.y = quaternionXYZ.y;
+		ret.z = quaternionXYZ.z;
+		ret.w = (float) Math.sqrt((initial.length() * initial.length()) * (end.length() * end.length()) + Vector3f.dot(initial, end));
+		ret.normalise(ret);
+		
+		return ret;
 	}
 }
