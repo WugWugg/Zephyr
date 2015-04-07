@@ -86,7 +86,11 @@ public class ChunkManager {
 	private static boolean isVisible(CoordinateInt coord)
 	{
 		float chunkRadius = Chunk.ABSOLUTE_CHUNK_SIZE / 2;
-		if (Main.firstPlayer.frustum.cubeInFrustum(coord.x + chunkRadius, coord.y + chunkRadius, coord.z + chunkRadius, chunkRadius)) return true;
+		//Translates from chunk coordinates to world coordinates -- the same as the matrixes are in
+		//CURRENT
+		//Not translating correctly need's to be scaled or relative?
+		CoordinateFloat chunkCoords = new CoordinateFloat(coord.x + chunkRadius, coord.y + chunkRadius, coord.z + chunkRadius).scale(Chunk.ABSOLUTE_CHUNK_SIZE);
+		if (Main.firstPlayer.frustum.cubeInFrustum(chunkCoords.x, chunkCoords.y, chunkCoords.z, chunkRadius)) return true;
 		return false;
 	}
 	
@@ -115,10 +119,9 @@ public class ChunkManager {
 			
 				//Get all chunks that need to be setup (thus, rebuilt)
 				if (!curChunk.isSetup) setupList.add(curCoord);
-				//Get all chunks that need flags reset; Currently not implemented
+				//Get all chunks that need flags reset (Currently not implemented)
 				//Get all chunks that are visible
 				else if (isVisible(curCoord)) visibleList.add(curCoord);
-				//visibleList.add(curCoord);
 			}
 		}
 	}

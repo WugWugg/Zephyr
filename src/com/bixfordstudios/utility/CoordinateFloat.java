@@ -37,6 +37,14 @@ public class CoordinateFloat {
 		return this;
 	}
 	
+	public CoordinateFloat scale(float scalar)
+	{
+		this.x *= scalar;
+		this.y *= scalar;
+		this.z *= scalar;
+		return this;
+	}
+	
 	/**
 	 * Calculates the six points in all cardinal directions with a distance of 1.
 	 * @return Array of coordinates indexed from North, South, East, West, Up, and Down, respectively.
