@@ -18,9 +18,9 @@ import com.bixfordstudios.utility.CoordinateFloat;
 public class Camera {
 
 	/**
-	 * viewRadius is the measure of how many chunks around the camera should be loaded
+	 * The measure of how many chunks around the camera should be loaded
 	 */
-	public static float VIEW_RADIUS = 2f;
+	public static float VIEW_RADIUS = 1f;
 	public static float RADIANS_TO_DEGREES_SCALAR = (float) (180 / Math.PI);
 	
 	/**
