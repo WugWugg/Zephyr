@@ -90,15 +90,8 @@ public class ChunkManager {
 	{
 		float chunkRadius = Chunk.ABSOLUTE_CHUNK_SIZE / 2;
 		//Translates from chunk coordinates to world coordinates -- the same as the matrixes are in
-<<<<<<< HEAD
-		//CURRENT
-		//Not translating correctly need's to be scaled or relative?
-		CoordinateFloat chunkCoords = new CoordinateFloat(coord.x + chunkRadius, coord.y + chunkRadius, coord.z + chunkRadius).scale(Chunk.ABSOLUTE_CHUNK_SIZE);
-		if (Main.firstPlayer.frustum.cubeInFrustum(chunkCoords.x, chunkCoords.y, chunkCoords.z, chunkRadius)) return true;
-=======
 		CoordinateFloat chunkCoords = new CoordinateFloat(coord.x, coord.y , coord.z).scale(Chunk.ABSOLUTE_CHUNK_SIZE);
 		if (Main.firstPlayer.frustum.cubeInFrustum(chunkCoords.x + chunkRadius, chunkCoords.y + chunkRadius, chunkCoords.z + chunkRadius, chunkRadius)) return true;
->>>>>>> transient
 		return false;
 	}
 	
