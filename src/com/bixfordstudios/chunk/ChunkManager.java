@@ -17,6 +17,9 @@ public class ChunkManager {
 	public static final int WORLD_OFFSET = WORLD_SIZE / 2;
 	public static final int ASYNC_NUM_CHUNKS_PER_FRAME = 2;
 	
+	public static transient int NUM_OF_LOADED_CHUNKS = 0;
+	public static transient int NUM_OF_VISIBLE_CHUNKS = 0;
+	
 	public static Chunk[][][] world = new Chunk[WORLD_SIZE][WORLD_SIZE][WORLD_SIZE];	
 	
 	public static HashMap<CoordinateInt, Chunk> loadedChunks = new HashMap<CoordinateInt, Chunk>();
@@ -87,10 +90,15 @@ public class ChunkManager {
 	{
 		float chunkRadius = Chunk.ABSOLUTE_CHUNK_SIZE / 2;
 		//Translates from chunk coordinates to world coordinates -- the same as the matrixes are in
+<<<<<<< HEAD
 		//CURRENT
 		//Not translating correctly need's to be scaled or relative?
 		CoordinateFloat chunkCoords = new CoordinateFloat(coord.x + chunkRadius, coord.y + chunkRadius, coord.z + chunkRadius).scale(Chunk.ABSOLUTE_CHUNK_SIZE);
 		if (Main.firstPlayer.frustum.cubeInFrustum(chunkCoords.x, chunkCoords.y, chunkCoords.z, chunkRadius)) return true;
+=======
+		CoordinateFloat chunkCoords = new CoordinateFloat(coord.x, coord.y , coord.z).scale(Chunk.ABSOLUTE_CHUNK_SIZE);
+		if (Main.firstPlayer.frustum.cubeInFrustum(chunkCoords.x + chunkRadius, chunkCoords.y + chunkRadius, chunkCoords.z + chunkRadius, chunkRadius)) return true;
+>>>>>>> transient
 		return false;
 	}
 	
@@ -132,6 +140,7 @@ public class ChunkManager {
 		Iterator<CoordinateInt> itr = unloadList.iterator();
 		while (numChunkUnloaded < ASYNC_NUM_CHUNKS_PER_FRAME && itr.hasNext())
 		{
+			NUM_OF_LOADED_CHUNKS--;
 			CoordinateInt key = itr.next();
 			setToWorld(key, loadedChunks.get(key));
 			loadedChunks.remove(key);
@@ -146,6 +155,7 @@ public class ChunkManager {
 		Iterator<CoordinateInt> itr = loadList.iterator();
 		while (numChunksLoaded < ASYNC_NUM_CHUNKS_PER_FRAME && itr.hasNext())
 		{
+			NUM_OF_LOADED_CHUNKS++;
 			CoordinateInt key = itr.next();
 			
 			//Check to make sure the chunk isn't already loaded
@@ -172,9 +182,11 @@ public class ChunkManager {
 	
 	public static void renderVisible()
 	{
+		NUM_OF_VISIBLE_CHUNKS = 0;
 		Iterator<CoordinateInt> itr = visibleList.iterator();
 		while (itr.hasNext())
 		{
+			NUM_OF_VISIBLE_CHUNKS++;
 			CoordinateInt key = itr.next();
 			loadedChunks.get(key).render(key);
 		}
