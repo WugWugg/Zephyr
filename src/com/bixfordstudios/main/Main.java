@@ -28,7 +28,6 @@ import org.lwjgl.opengl.DisplayMode;
 import com.bixfordstudios.camera.Camera;
 import com.bixfordstudios.chunk.ChunkManager;
 import com.bixfordstudios.input.InputManager;
-import com.bixfordstudios.utility.CoordinateFloat;
 
 public class Main {
 
@@ -47,6 +46,8 @@ public class Main {
 		while (!Display.isCloseRequested())
 		{
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+			print("Number of Chunks: " + ChunkManager.loadedChunks.values().toArray().length);
 			
 			//Chunk Update
 			ChunkManager.update(firstPlayer.position);
@@ -92,7 +93,7 @@ public class Main {
 		firstPlayer = new Camera();
 	}
 	
-	//DEBUG
+	//DEBUG && TESTING
 	public static void print(Object str)
 	{
 		System.out.println(str.toString());

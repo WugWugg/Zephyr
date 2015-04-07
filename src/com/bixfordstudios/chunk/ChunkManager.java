@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import org.lwjgl.util.vector.Matrix4f;
-
 import com.bixfordstudios.camera.Camera;
 import com.bixfordstudios.main.Main;
 import com.bixfordstudios.utility.CoordinateFloat;
@@ -17,7 +15,7 @@ public class ChunkManager {
 
 	public static final int WORLD_SIZE = 32;
 	public static final int WORLD_OFFSET = WORLD_SIZE / 2;
-	public static final int ASYNC_NUM_CHUNKS_PER_FRAME = 5;
+	public static final int ASYNC_NUM_CHUNKS_PER_FRAME = 2;
 	
 	public static Chunk[][][] world = new Chunk[WORLD_SIZE][WORLD_SIZE][WORLD_SIZE];	
 	
@@ -85,9 +83,10 @@ public class ChunkManager {
 		return CoordinateInt.distance(coord1, coord2) <= Camera.VIEW_RADIUS;
 	}
 	
-	private static boolean isVisible(CoordinateInt coord, Matrix4f matrix)
+	private static boolean isVisible(CoordinateInt coord)
 	{
-		//TO-DO: Add fustrum culling
+		float chunkRadius = Chunk.ABSOLUTE_CHUNK_SIZE / 2;
+		if (Main.firstPlayer.frustum.cubeInFrustum(coord.x + chunkRadius, coord.y + chunkRadius, coord.z + chunkRadius, chunkRadius)) return true;
 		return false;
 	}
 	
@@ -116,25 +115,25 @@ public class ChunkManager {
 			
 				//Get all chunks that need to be setup (thus, rebuilt)
 				if (!curChunk.isSetup) setupList.add(curCoord);
-				else				
 				//Get all chunks that need flags reset; Currently not implemented
-				
 				//Get all chunks that are visible
-				//For now I am going to let all loaded chunks be visible; fustrum culling will come later
-				// If (isVisible(curCoord)) visibleList.add(curCoord);
-				visibleList.add(curCoord);
+				else if (isVisible(curCoord)) visibleList.add(curCoord);
+				//visibleList.add(curCoord);
 			}
 		}
 	}
 	
 	private static void unload()
 	{
+		int numChunkUnloaded = 0;
 		Iterator<CoordinateInt> itr = unloadList.iterator();
-		while (itr.hasNext())
+		while (numChunkUnloaded < ASYNC_NUM_CHUNKS_PER_FRAME && itr.hasNext())
 		{
 			CoordinateInt key = itr.next();
 			setToWorld(key, loadedChunks.get(key));
 			loadedChunks.remove(key);
+			
+			numChunkUnloaded++;
 		}
 	}
 	
@@ -155,16 +154,16 @@ public class ChunkManager {
 	
 	private static void setup()
 	{
-		int numChunksLoaded = 0;
+		int numChunksSetup = 0;
 		Iterator<CoordinateInt> itr = setupList.iterator();
-		while (numChunksLoaded < ASYNC_NUM_CHUNKS_PER_FRAME && itr.hasNext())
+		while (numChunksSetup < ASYNC_NUM_CHUNKS_PER_FRAME && itr.hasNext())
 		{
 			CoordinateInt key = itr.next();
 			
 			//Check to make sure the chunk isn't already setup
 			if (!loadedChunks.get(key).isSetup) loadedChunks.get(key).setupData();
 			
-			numChunksLoaded++;
+			numChunksSetup++;
 		}
 	}
 	

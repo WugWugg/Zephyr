@@ -20,7 +20,7 @@ public class Camera {
 	/**
 	 * viewRadius is the measure of how many chunks around the camera should be loaded
 	 */
-	public static int VIEW_RADIUS = 1;
+	public static float VIEW_RADIUS = 1f;
 	public static float RADIANS_TO_DEGREES_SCALAR = (float) (180 / Math.PI);
 	
 	/**
@@ -33,12 +33,23 @@ public class Camera {
 	 */
 	private Matrix4f viewingMatrix;
 	public CoordinateFloat position = new CoordinateFloat(0, 0, 0);
+	public Frustum frustum = new Frustum();
 	
+	/**
+	 * Generates a new camera with it's viewMatrix as the identity matrix.
+	 */
 	public Camera()
 	{
 		this.viewingMatrix = new Matrix4f();
 	}
 	
+	/**
+	 * Moves the camera orthogonally.<p>
+	 * Translates the current matrix by the inverse of the given distances. Then updates the current position based on the identity matrix. Finally, updates the view fustrum.
+	 * @param x A distance to move on the x-axis
+	 * @param y A distance to move on the y-axis
+	 * @param z A distance to move on the z-axis
+	 */
 	public void translate(float x, float y, float z)
 	{	
 		this.setViewingMatrix(Translation.translate(new Vector3f(-x, -y ,z), this.viewingMatrix));
@@ -48,11 +59,21 @@ public class Camera {
 		position.y = positionV.y;
 		position.z = positionV.z;
 		position.round();
+		
+		frustum.update();
 	}
 	
+	/**
+	 * Rotates the current viewMatrix.
+	 * @param pitch Units to rotate
+	 * @param yaw Units to rotate
+	 * @param roll Units to rotate
+	 */
 	public void rotate(float pitch, float yaw, float roll)
 	{
 		this.setViewingMatrix(Rotation.rotate(new Quaternion(pitch, yaw, roll, 1), this.viewingMatrix));
+		
+		frustum.update();
 	}
 	
 	/**
