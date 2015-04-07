@@ -47,7 +47,7 @@ public class Main {
 		{
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			
-			print("Number of Chunks: " + ChunkManager.loadedChunks.values().toArray().length);
+			print("Number Of Chunks: "+ ChunkManager.NUM_OF_LOADED_CHUNKS +" / "+ ChunkManager.NUM_OF_VISIBLE_CHUNKS);
 			
 			//Chunk Update
 			ChunkManager.update(firstPlayer.position);
