@@ -1,7 +1,7 @@
 package com.bixfordstudios.chunk;
 
 import static org.lwjgl.opengl.ARBBufferObject.GL_STATIC_DRAW_ARB;
-import static org.lwjgl.opengl.ARBBufferObject.glBindBufferARB;
+import static org.lwjgl.opengl.ARBBufferObject.*;
 import static org.lwjgl.opengl.ARBBufferObject.glBufferDataARB;
 import static org.lwjgl.opengl.ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -22,7 +22,7 @@ import static org.lwjgl.opengl.GL11.glTexCoordPointer;
 import static org.lwjgl.opengl.GL11.glTranslatef;
 import static org.lwjgl.opengl.GL11.glVertexPointer;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL15.*;
 
 import java.nio.FloatBuffer;
 
@@ -125,7 +125,7 @@ public class Chunk {
 		glPushMatrix();
 			glTranslatef(coord.x * Chunk.ABSOLUTE_CHUNK_SIZE, coord.y * Chunk.ABSOLUTE_CHUNK_SIZE, coord.z * Chunk.ABSOLUTE_CHUNK_SIZE);
 			 
-			glBindBufferARB(GL_ARRAY_BUFFER_ARB, VBOID);
+			glBindBuffer(GL_ARRAY_BUFFER, VBOID);
 			
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -145,7 +145,7 @@ public class Chunk {
 			glDisableClientState(GL_VERTEX_ARRAY);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 			
-			glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			
 		glMatrixMode(GL_MODELVIEW_MATRIX);
 		glPopMatrix();
@@ -192,26 +192,27 @@ public class Chunk {
 		for (int i = 0; i < CubeType.values().length - 1; i++)
 		{
 			textureIndices[i] = chunkVboData.position() / (Cube.NUMBER_OF_TEXTURE_COORDS + Cube.NUMBER_OF_VERTEX_COORDS);
-			try {	
-				for (int j = 0; j < sortedCubes[i].position(); j++)
-				{
-					chunkVboData.put(sortedCubes[i].get(j));
-				}
-			} catch (NullPointerException e) {}
+			try {
+				chunkVboData.put((FloatBuffer) sortedCubes[i].flip());
+			} catch (NullPointerException e) {} //No values in one of the textures
 		}
 		
 		chunkVboData.flip();
 		VBOID = glGenBuffers();
 		
-		glBindBufferARB(GL_ARRAY_BUFFER_ARB, VBOID);
-		glBufferDataARB(GL_ARRAY_BUFFER_ARB, chunkVboData, GL_STATIC_DRAW_ARB);
-		glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, VBOID);
+		glBufferData(GL_ARRAY_BUFFER, chunkVboData, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
 		textureIndices[textureIndices.length - 1] = chunkVboData.position() / (Cube.NUMBER_OF_TEXTURE_COORDS + Cube.NUMBER_OF_VERTEX_COORDS);
 		this.isSetup = true;
 		return this;
 	}
 
+	public void deconstruct()
+	{
+		glDeleteBuffers(VBOID);
+	}
 	
 	//Cube Specific Below
 	

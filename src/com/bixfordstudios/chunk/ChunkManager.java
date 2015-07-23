@@ -11,7 +11,7 @@ import com.bixfordstudios.utility.CoordinateFloat;
 import com.bixfordstudios.utility.CoordinateInt;
 
 /**
- * 
+ * Each chuck should have a file in a world folder
  * @author Nolan E. Rosen
  *
  */
@@ -107,6 +107,7 @@ public class ChunkManager {
 		}
 		return true;
 	}
+	
 	/**
 	 * Checks to see if the chunk in the chunk coordinate space is less than the distance defined by {@link Camera#VIEW_RADIUS}.
 	 * @param coord1 A {@link CoordinateInt} of one chunk given in the chunk coordinate space
@@ -148,7 +149,7 @@ public class ChunkManager {
 			CoordinateInt curCoord = curEntry.getKey();
 			
 			//Get all chunks that need to be un-loaded
-			if (!isInRange(curCoord, centerScene)) unloadList.add(curCoord);
+			 if (!isInRange(curCoord, centerScene)) unloadList.add(curCoord);
 			else
 			{	
 				//Get all chunks that need to be loaded by checking if the chunk's neighbors
@@ -182,11 +183,13 @@ public class ChunkManager {
 			NUM_OF_LOADED_CHUNKS--;
 			CoordinateInt key = itr.next();
 			setToWorld(key, loadedChunks.get(key));
+			loadedChunks.get(key).deconstruct();
 			loadedChunks.remove(key);
 			
 			numChunkUnloaded++;
 		}
 	}
+	
 	/**
 	 * Method to iterate through the loading list and add them to the loaded chunk list. Limits the number of chunks managed to
 	 * the number defined in {@link #ASYNC_NUM_CHUNKS_PER_FRAME}.
